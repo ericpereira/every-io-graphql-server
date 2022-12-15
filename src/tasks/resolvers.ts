@@ -1,9 +1,11 @@
 
-import { genRanHex } from "../utils/common";
+import { genRanHex, isValidStatus } from "../utils/common";
 import { tasksMock } from "./data";
 import { Status, TaskAttributes } from "./type";
 
 let tasks = tasksMock
+
+
 
 export const resolvers = {
   Query: {
@@ -17,15 +19,24 @@ export const resolvers = {
   },
   Mutation: {
     addTask: (parent, args, contextValue, info) => {
-      const { title, description, status } = args
-      let id = ''
-      do {
-        id = genRanHex(16)  
-      } while (tasks.filter(task => task.id === id).length > 0)
+      try {
+        const { title, description, status } = args
+        if(!isValidStatus(status)){
+          throw new Error("invalid status")
+        }
 
-      const newTask: TaskAttributes = { title, description, status, id , owner: 'me', createdAt: new Date() }
-      tasks.push(newTask)
-      return newTask
+        let id = ''
+        do {
+          id = genRanHex(16)  
+        } while (tasks.filter(task => task.id === id).length > 0)
+
+        const newTask: TaskAttributes = { title, description, status, id , owner: 'me', createdAt: new Date() }
+        tasks.push(newTask)
+        return newTask
+       
+      } catch (error) {
+        throw Error(error)
+      }
     },
     moveTask: (parent, args, contextValue, info) => {
       const { id, status } = args
