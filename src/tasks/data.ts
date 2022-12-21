@@ -2,19 +2,19 @@ import { Status, TaskAttributes } from "./type";
 
 export const tasksMock: Array<TaskAttributes> = [
   {
-    id: '8559cbf257197f06',
+    id: 1,
     title: 'First task',
     description: 'Hello world task',
     status: Status.TO_DO,
     createdAt: new Date(),
-    owner: 'first'
+    userId: 1
   },
   {
-    id: '3bfb2768b442d49f',
+    id: 1,
     title: 'Second task',
     description: 'Hello world task',
     status: Status.IN_PROGRESS,
     createdAt: new Date(),
-    owner: 'first'
+    userId: 1
   }
 ]

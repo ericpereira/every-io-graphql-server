@@ -1,12 +1,12 @@
 export type TaskAttributes = {
-  id: string
+  id?: number
   title: string
-  description: string
+  description?: string
   status: Status
-  createdAt: Date
+  createdAt?: Date
   updatedAt?: Date
   disabledAt?: Date
-  owner: string
+  userId: number
 }
 
 export enum Status {
@@ -30,7 +30,7 @@ export const typeDefs = `
     createdAt: String
     updatedAt: String
     disabledAt: String
-    owner: String
+    userId: String
   }
 
   # The "Query" type is special: it lists all of the available queries that
@@ -42,8 +42,8 @@ export const typeDefs = `
 
   type Mutation {
     addTask(title: String, description: String, status: String): Task
-    moveTask(id: String, status: Status): Task
-    archiveTask(id: String): Task
+    moveTask(id: ID, status: Status): Task
+    archiveTask(id: ID): Task
   }
 
   enum Status {

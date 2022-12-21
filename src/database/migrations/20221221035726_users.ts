@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
         table.string('lastName', 255);
         table.string('email', 255);
         table.string('password', 255);
-        table.datetime('createdAt');
+        table.datetime('createdAt').notNullable().defaultTo(knex.fn.now());
         table.string('token');
     })
 }

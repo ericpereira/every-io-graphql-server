@@ -8,7 +8,9 @@ export async function up(knex: Knex): Promise<void> {
         table.string('title', 255).notNullable();
         table.string('description', 255);
         table.string('status', 255);
-        table.datetime('createdAt');
+        table.datetime('createdAt').notNullable().defaultTo(knex.fn.now());
+        table.datetime('updatedAt');
+        table.datetime('disabledAt');
         table.integer('userId').notNullable();
     })
 }
