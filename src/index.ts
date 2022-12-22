@@ -2,14 +2,14 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 
 import { server } from './app';
 import knex from './database/connection';
-import { TaskAttributes } from './tasks/type';
+import { Task } from './tasks/type';
 
 const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
 });
 
 // try {
-//   const test = await knex<TaskAttributes>('tasks').then(response => {
+//   const test = await knex<Task>('tasks').then(response => {
 //     console.log('response', response[0].title)
 //   }).catch(error => {
 //     console.log('error', error)

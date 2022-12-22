@@ -1,4 +1,14 @@
-export type TaskAttributes = {
+export type User = {
+  id: number
+  firstName?: string
+  lastName?: string
+  email: string
+  password: string
+  createdAt?: Date
+  token?: string
+}
+
+export type Task = {
   id?: number
   title: string
   description?: string
@@ -16,11 +26,16 @@ export enum Status {
   ARCHIVED = 'Archived'
 }
 
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
-export const typeDefs = `  
-  # This "Book" type defines the queryable fields for every book in our data source.
+export const typeDefs = `
+  type User {
+    id: ID
+    firstName: String
+    lastName: String
+    email: String
+    password: String
+    createdAt: String
+    token: String
+  }
 
   type Task {
     id: ID
@@ -33,17 +48,16 @@ export const typeDefs = `
     userId: String
   }
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
     tasks: [Task]
+    login(email: String, password: String): String
   }
 
   type Mutation {
     addTask(title: String, description: String, status: String): Task
     moveTask(id: ID, status: Status): Task
     archiveTask(id: ID): Task
+    createUser(firstName: String, lastName: String, email: String, password: String): User
   }
 
   enum Status {
