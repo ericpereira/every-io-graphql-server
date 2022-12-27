@@ -1,22 +1,27 @@
 import bcrypt from "bcrypt";
 import { isValidStatus } from "../utils/common";
-import { Status, Task, User } from "./type";
+import { MyContext, Status, Task, User } from "./type";
 import knex from '../database/connection';
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 import jsonwebtoken from 'jsonwebtoken';
-const { sign, decode, verify } = jsonwebtoken;
+const { sign } = jsonwebtoken;
 
 export const resolvers = {
   Query: {
-    tasks: async () => {
+    tasks: async (parent, args, contextValue: MyContext) => {
+      const { user } = contextValue
+      if(!user) throw new Error('Unauthorized')
+
       try {
-        const tasks = await knex<Task>('tasks')
+        const tasks = await knex<Task>('tasks').where('userId', user.id)
         return tasks  
       } catch (error) {
         throw new Error(error)
       }
     },
-    login: async (parent, args, contextValue, info) => {
+    login: async (parent, args) => {
       try {
         const { email, password } = args
 
@@ -26,7 +31,7 @@ export const resolvers = {
           
         const match = await bcrypt.compare(password, user.password);
         if(match) {
-          const token = sign({ foo: 'bar' }, 'RANDOM_TOKEN');
+          const token = sign({ id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email }, process.env.TOKEN_HASH);
           return `Bearer ${token}`;
         }
         throw Error('Password incorrect')
@@ -42,15 +47,18 @@ export const resolvers = {
     ARCHIVED: 'Archived'
   },
   Mutation: {
-    addTask: async (parent, args, contextValue, info) => {
+    addTask: async (parent, args, contextValue) => {
       try {
+        const { user } = contextValue
+        if(!user) throw new Error('Unauthorized')
+
         const { title, description, status } = args
         if(!isValidStatus(status)){
           throw new Error("invalid status")
         }
 
         const newTask = await knex<Task>('tasks')
-          .insert({ title, description, status, userId: 1 })
+          .insert({ title, description, status, userId: user.id })
         
         const insertedTask = await knex<Task>('tasks')
           .where('id', newTask)
@@ -61,36 +69,60 @@ export const resolvers = {
         throw Error(error)
       }
     },
-    moveTask: async (parent, args, contextValue, info) => {
-      const { id, status } = args
-      if(!isValidStatus(status)){
-        throw new Error("invalid status")
+    moveTask: async (parent, args, contextValue) => {
+      try {
+        const { user } = contextValue
+        if(!user) throw new Error('Unauthorized')
+
+        const { id, status } = args
+        if(!isValidStatus(status)){
+          throw new Error("invalid status")
+        }
+
+        const oldTask = await knex<Task>('tasks').where('id', id).andWhere('userId', user.id).first()
+        if(!oldTask) throw new Error('Invalid task id')
+        
+        await knex<Task>('tasks')
+          .where('id', id)
+          .andWhere('userId', user.id)
+          .update({ status })
+        
+        const updatedTask = await knex<Task>('tasks')
+          .where('id', id)
+          .andWhere('userId', user.id)
+          .first()
+
+        return { ...updatedTask }
+      } catch (error) {
+        throw new Error(error)
       }
-      
-      const task = await knex<Task>('tasks')
-        .where('id', id)
-        .update({ status })
-      
-      const updatedTask = await knex<Task>('tasks')
-        .where('id', task)
-        .first()
-
-      return { ...updatedTask }
     },
-    archiveTask: async (parent, args, contextValue, info) => {
-      const { id } = args
+    archiveTask: async (parent, args, contextValue) => {
+      try {
+        const { user } = contextValue
+        if(!user) throw new Error('Unauthorized')
 
-      const task = await knex<Task>('tasks')
-        .where('id', id)
-        .update({ status: Status.ARCHIVED })
-      
-      const updatedTask = await knex<Task>('tasks')
-        .where('id', task)
-        .first()
+        const { id } = args
 
-      return { ...updatedTask }
+        const oldTask = await knex<Task>('tasks').where('id', id).andWhere('userId', user.id).first()
+        if(!oldTask) throw new Error('Invalid task id')
+
+        await knex<Task>('tasks')
+          .where('id', id)
+          .andWhere('userId', user.id)
+          .update({ status: Status.ARCHIVED })
+
+        const updatedTask = await knex<Task>('tasks')
+          .where('id', id)
+          .andWhere('userId', user.id)
+          .first()
+
+        return { ...updatedTask }
+      } catch (error) {
+        throw new Error(error)
+      }
     },
-    createUser: async (parent, args, contextValue, info) => {
+    createUser: async (parent, args) => {
       try {
         const { firstName, lastName, email, password } = args
         const saltRounds = 10;

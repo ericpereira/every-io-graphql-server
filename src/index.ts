@@ -1,23 +1,16 @@
 import { startStandaloneServer } from '@apollo/server/standalone';
 
 import { server } from './app';
-import knex from './database/connection';
-import { Task } from './tasks/type';
+import { getUser } from './utils/common';
 
 const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async ({ req, res }) => {
+    const token = req.headers.authorization || ''
+    const user = await getUser(token)
+    return { user }
+  },
 });
-
-// try {
-//   const test = await knex<Task>('tasks').then(response => {
-//     console.log('response', response[0].title)
-//   }).catch(error => {
-//     console.log('error', error)
-//   })
-//   console.log('test', test)
-// } catch (error) {
-//   console.log('error', error)
-// }
 
 
 console.log(`🚀  Server ready at: ${url}`);

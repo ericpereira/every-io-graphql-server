@@ -8,6 +8,18 @@ export type User = {
   token?: string
 }
 
+export type UserPayload = {
+  id: number
+  name: string
+  email: string
+  iat: number
+}
+
+export interface MyContext {
+  user?: UserPayload;
+}
+
+
 export type Task = {
   id?: number
   title: string
@@ -18,6 +30,7 @@ export type Task = {
   disabledAt?: Date
   userId: number
 }
+
 
 export enum Status {
   TO_DO = 'To do',
