@@ -15,6 +15,7 @@ Install the dependencies and start the containers.
 ```sh
 cd every-io-graphql-server
 npm install
+cp .env.example .env
 sudo docker-compose up -d
 ```
 
