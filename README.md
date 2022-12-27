@@ -31,6 +31,9 @@ email: travisscott@hotmail.com password: Pass@123
 - After login put the returned Bearer token in the authorization headers for every query or mutarion executed below
 
 ## Stop application
+
+Run this commands inside the application folder
+
 ```sh
 sudo docker-compose down --rmi all --remove-orphans
 sudo docker system prune --force --volumes
