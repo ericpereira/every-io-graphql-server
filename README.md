@@ -19,7 +19,9 @@ sudo docker-compose up -d
 ```
 
 This will up the containers and run the migrations, seeds and create the users:
+
 email: eric.pereira@hotmail.com password: Pass@123
+
 email: travisscott@hotmail.com password: Pass@123
 
 ## How to use
