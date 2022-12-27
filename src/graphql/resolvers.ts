@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { isValidStatus } from "../utils/common";
+import { hashPassword, isValidStatus } from "../utils/common";
 import { MyContext, Status, Task, User } from "./type";
 import knex from '../database/connection';
 import * as dotenv from 'dotenv'
@@ -125,9 +125,7 @@ export const resolvers = {
     createUser: async (parent, args) => {
       try {
         const { firstName, lastName, email, password } = args
-        const saltRounds = 10;
-        
-        const hash = bcrypt.hashSync(password, saltRounds);
+        const hash = hashPassword(password);
         
         const newUser = await knex<User>('users')
           .insert({ firstName, lastName, email, password: hash })

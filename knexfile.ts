@@ -7,9 +7,6 @@ import {fileURLToPath} from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-// Update with your config settings.
-
 const config: { [key: string]: Knex.Config } = {
   development: {
     client: "mysql",
@@ -23,6 +20,9 @@ const config: { [key: string]: Knex.Config } = {
     migrations: {
       directory: path.resolve(__dirname, "src", "database", "migrations"),
     },
+    seeds: {
+      directory: path.resolve(__dirname, "src", "database", "seeds"),
+    }
   },
 
   staging: {
