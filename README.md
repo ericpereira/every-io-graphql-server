@@ -46,6 +46,11 @@ Run this commands inside the application folder
 
 ```sh
 sudo docker-compose down --rmi all --remove-orphans
+```
+
+```sh
 sudo docker system prune --force --volumes
 ```
+
+
 
