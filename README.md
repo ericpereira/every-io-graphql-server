@@ -39,6 +39,7 @@ email: travisscott@hotmail.com password: Pass@123
 - Open the link http://localhost:4444 in the browser to start to user the API
 - Make an query to login with seeded credentials or make an mutation to create your own user
 - After login put the returned Bearer token in the authorization headers for every query or mutarion executed below
+- NOTE: In few architectures if the app container don't connect to mysql the system reboot is needed (docker issue)
 
 ## Stop application
 
@@ -51,6 +52,3 @@ sudo docker-compose down --rmi all --remove-orphans
 ```sh
 sudo docker system prune --force --volumes
 ```
-
-
-
